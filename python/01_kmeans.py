@@ -1,7 +1,6 @@
 """
 01_kmeans.py
-Corre K-Means sobre los datos de MySQL y guarda los centroides
-(Zonas) de vuelta en la base de datos.
+Corre K-Means sobre los datos de MySQL y guarda los centroides (o zonas) en la base de datos
 """
 import pandas as pd
 import numpy as np
@@ -10,12 +9,12 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sqlalchemy import create_engine, text
 
-# ── Conexión a MySQL ────────────────────────────────────────────
+# Conexión a MySQL
 import os
 DB_PASS = os.environ.get("DB_PASSWORD", "tu_password")
 engine  = create_engine(f"mysql+pymysql://root:{DB_PASS}@localhost/avifauna_zmg")
 
-# ── 1. Cargar coordenadas desde la base de datos ────────────────
+# 1. Cargar coordenadas desde la base de datos
 print("Cargando datos de MySQL...")
 df = pd.read_sql(
     "SELECT id_registro, latitud, longitud FROM RegistrosDeAvistamiento",
@@ -23,12 +22,12 @@ df = pd.read_sql(
 )
 print(f"  Registros cargados: {len(df):,}")
 
-# ── 2. Normalizar coordenadas (CRUCIAL para K-Means) ───────────
+# 2. Normalizar coordenadas (CRUCIAL para K-Means)
 #   Sin normalizar, la escala de lat y lon podría distorsionar clusters
 scaler = StandardScaler()
 X = scaler.fit_transform(df[["latitud", "longitud"]])
 
-# ── 3. Método del Codo para encontrar K óptimo ─────────────────
+# 3. Metodo del codo para encontrar el K óptimo
 print("\nCalculando Método del Codo (K de 2 a 14)...")
 inercias = []
 rango_k  = range(2, 15)
@@ -56,7 +55,7 @@ plt.savefig("elbow_method.png", dpi=150)
 print(f"  Gráfica guardada: elbow_method.png")
 print(f"  → Abre la imagen y confirma que K={K_OPTIMO} es el codo correcto.")
 
-# ── 4. Entrenar modelo final con K óptimo ──────────────────────
+# 4. Entrenar modelo final con K óptimo
 print(f"\nEntrenando K-Means con K={K_OPTIMO}...")
 modelo_final = KMeans(n_clusters=K_OPTIMO, random_state=42, n_init=10, max_iter=300)
 df["cluster_id"] = modelo_final.fit_predict(X)
@@ -64,7 +63,7 @@ df["cluster_id"] = modelo_final.fit_predict(X)
 print(f"Modelo entrenado. Distribución de registros por clúster:")
 print(df["cluster_id"].value_counts().sort_index().to_string())
 
-# ── 5. Calcular centroides en coordenadas reales (desnormalizar) ─
+# 5. Calcular centroides en coordenadas reales (desnormalizar)
 centroides_norm = modelo_final.cluster_centers_
 centroides_real = scaler.inverse_transform(centroides_norm)
 
@@ -79,7 +78,7 @@ zonas_df = pd.DataFrame({
 print("\nCentroides identificados (Nodos Biológicos Invisibles):")
 print(zonas_df.to_string(index=False))
 
-# ── 6. Guardar centroides en MySQL (tabla Zonas) ────────────────
+# 6. Guardar centroides en MySQL (tabla Zonas)
 print("\nGuardando zonas en MySQL...")
 with engine.connect() as con:
     con.execute(text("DELETE FROM Zonas"))  # Limpia antes de reinsertar

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class ETLService {
-    // Cuántos registros se envían juntos en cada lote SQL
+    // Cuántos registros se envían juntos en cada lote de SQL
     private static final int BATCH_SIZE = 500;
     private final Connection conn;
 
@@ -18,8 +18,7 @@ public class ETLService {
     }
 
     /**
-     * CARGAR: Inserta la lista en MySQL en lotes (O(n), no O(n²)).
-     * ON DUPLICATE KEY UPDATE evita errores por registros repetidos.
+     CARGAR: Inserta la lista en MySQL en lotes (O(n), no O(n²)). ON DUPLICATE KEY UPDATE evita errores de repetidos
      */
     public void cargar(List<Avistamiento> avistamientos) throws SQLException {
         String sql = """
@@ -49,7 +48,7 @@ public class ETLService {
 
                 if (++contador % BATCH_SIZE == 0) {
                     ps.executeBatch();
-                    System.out.printf("    [CARGAR] %,d registros insertados...%n", contador);
+                    System.out.printf("[CARGAR] %,d registros insertados...%n", contador);
                 }
             }
             ps.executeBatch();  // Lote residual
@@ -66,9 +65,9 @@ public class ETLService {
     }
 
     /**
-     * Puebla la tabla Especies con los nombres únicos
-     * que ya existen en RegistrosDeAvistamiento.
-     * Se ejecuta DESPUÉS de cargar los avistamientos.
+     Ingresa datos en la tabla Especies con los nombres únicos
+     que ya existen en RegistrosDeAvistamiento.
+     Se ejecuta DESPUES de cargar los avistamientos
      */
     public void poblarEspecies() throws SQLException {
         String sql = """
@@ -79,7 +78,7 @@ public class ETLService {
             """;
         try (Statement st = conn.createStatement()) {
             int filas = st.executeUpdate(sql);
-            System.out.println("  Especies insertadas: " + filas);
+            System.out.println("  Especies agregadas: " + filas);
         }
     }
 }

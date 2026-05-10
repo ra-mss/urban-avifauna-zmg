@@ -1,7 +1,6 @@
 """
 02_estadistica.py
-Análisis descriptivo por zona + Distribución de Poisson
-para validar estadísticamente cada nodo biológico.
+Análisis descriptivo por zona y Distribución de Poisson para validar estadísticamente cada nodo
 """
 import pandas as pd
 import numpy as np
@@ -15,7 +14,7 @@ engine  = create_engine(f"mysql+pymysql://root:{DB_PASS}@localhost/avifauna_zmg"
 
 # 1. Estadística DESCRIPTIVA por zona
 print("=" * 55)
-print("  ESTADÍSTICA DESCRIPTIVA POR ZONA")
+print("ESTADÍSTICA DESCRIPTIVA POR ZONA")
 print("=" * 55)
 
 query = """
@@ -50,19 +49,19 @@ print("=" * 55)
 lambdas = df.groupby("cluster_id")["cantidad"].mean()
 lambda_global = df["cantidad"].mean()
 
-print(f"\n  Lambda global (ciudad completa): {lambda_global:.3f}")
-print(f"\n  {'Zona':>5}  {'λ':>7}  {'P(X≥3)':>9}  {'P(X≥5)':>9}  {'vs Global':>10}")
-print(f"  {'─'*5}  {'─'*7}  {'─'*9}  {'─'*9}  {'─'*10}")
+print(f"\nLambda global (ciudad completa): {lambda_global:.3f}")
+print(f"\n{'Zona':>5}  {'λ':>7}  {'P(X≥3)':>9}  {'P(X≥5)':>9}  {'vs Global':>10}")
+print(f"{'─'*5}  {'─'*7}  {'─'*9}  {'─'*9}  {'─'*10}")
 
 for zona_id, lam in lambdas.items():
     p_3_o_mas = 1 - poisson.cdf(2, lam)  # P(X >= 3)
     p_5_o_mas = 1 - poisson.cdf(4, lam)  # P(X >= 5)
     diferencia = lam - lambda_global
-    signo      = "▲" if diferencia > 0 else "▼"
-    print(f"  {zona_id:>5}  {lam:>7.3f}  {p_3_o_mas:>9.4f}  {p_5_o_mas:>9.4f}  "
-          f"  {signo}{abs(diferencia):.3f}")
+    signo = "▲" if diferencia > 0 else "▼"
+    print(f"{zona_id:>5}  {lam:>7.3f}  {p_3_o_mas:>9.4f}  {p_5_o_mas:>9.4f}  "
+          f"{signo}{abs(diferencia):.3f}")
 
-# ── 3. Graficar Poisson de la zona con mayor lambda ─────────────
+# 3. Graficar Poisson de la zona con mayor lambda
 zona_max = lambdas.idxmax()
 lam_max  = lambdas[zona_max]
 
@@ -90,7 +89,7 @@ plt.tight_layout()
 plt.savefig("poisson_zona.png", dpi=150)
 print("\nGráfica guardada: poisson_zona.png")
 
-# ── 4. Exportar tabla resumen a CSV (para el reporte) ───────────
+# 4. Exportar tabla resumen a CSV (para el reporte)
 descriptivo.to_csv("estadisticas_por_zona.csv")
 print("Tabla guardada: estadisticas_por_zona.csv")
 print("\nEstadística completa. Siguiente: python 03_mapa.py")

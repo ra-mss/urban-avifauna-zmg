@@ -2,7 +2,7 @@
 03_mapa.py
 Genera el mapa HTML:
   - Puntos de avistamiento coloreados por clúster
-  - Marcadores de centroides (Nodos Biológicos Invisibles)
+  - Marcadores de centroides (Nodos)
   - Popup informativo por zona
   - Control de capas para mostrar/ocultar clústeres
 """
@@ -81,7 +81,7 @@ for cluster_id in sorted(df["cluster_id"].unique()):
 
     capa.add_to(mapa)
 
-# 6. Marcadores de NODOS BIOLÓGICOS (centroides)
+# 6. Marcadores de nodos (o centroides)
 nodos_capa = folium.FeatureGroup(name="Nodos biológicos", show=True)
 
 for _, zona in zonas.iterrows():

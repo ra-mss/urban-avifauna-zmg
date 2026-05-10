@@ -7,13 +7,13 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // ── Validaciones de entorno ─────────────────────────────────
+        // Validaciones de entorno
         String apiKey = System.getenv("EBIRD_API_KEY");
         String dbPass = System.getenv("DB_PASSWORD");
 
         if (apiKey == null || apiKey.isBlank()) {
-            System.err.println(" Falta EBIRD_API_KEY.");
-            System.err.println(" Ejecuta: export EBIRD_API_KEY=tu_clave");
+            System.err.println("Falta EBIRD_API_KEY.");
+            System.err.println("Ejecuta: export EBIRD_API_KEY=tu_clave");
             System.exit(1);
         }
 
@@ -28,13 +28,13 @@ public class Main {
 
             EBirdAPIClient apiClient = new EBirdAPIClient();
             ETLService etlService = new ETLService(conn);
-            DataAccumulatorService acumulator =
-                    new DataAccumulatorService(apiClient, etlService);
+            DataAccumulator acumulator =
+                    new DataAccumulator(apiClient, etlService);
 
             acumulator.ejecutar();
 
             System.out.println("\n Pipeline ETL completado.");
-            System.out.println("   Siguiente paso: ejecuta python/01_kmeans.py");
+            System.out.println("Siguiente paso: ejecuta python/01_kmeans.py");
 
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());

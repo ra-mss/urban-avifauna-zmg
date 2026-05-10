@@ -2,15 +2,14 @@ package com.biodiversidad.service;
 
 import com.biodiversidad.model.Avistamiento;
 import java.time.LocalDate;
-import java.util.*;
 import java.util.List;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class DataAccumulatorService {
+public class DataAccumulator {
     private final EBirdAPIClient api;
-    private final ETLService     etl;
+    private final ETLService etl;
 
     // Fechas históricas de alta actividad migratoria en Jalisco
     private static final LocalDate[] FECHAS_HISTORICAS = {
@@ -35,7 +34,7 @@ public class DataAccumulatorService {
             LocalDate.of(2026, 4, 15),
     };
 
-    public DataAccumulatorService(EBirdAPIClient api, ETLService etl) {
+    public DataAccumulator(EBirdAPIClient api, ETLService etl) {
         this.api = api;
         this.etl = etl;
     }
@@ -44,7 +43,7 @@ public class DataAccumulatorService {
         Set<String> clavesVistas = new HashSet<>();
         List<Avistamiento> acumulados = new ArrayList<>();
 
-        // Llamada 1: últimos 30 días en MX-JAL
+        // Llamada 1: últimos 30 días en Jalisco
         System.out.println("\n[1/16] Observaciones recientes MX-JAL...");
         agregarNuevos(api.fetchRecientes(30), acumulados, clavesVistas);
 
@@ -66,7 +65,7 @@ public class DataAccumulatorService {
             Thread.sleep(350); // Rate limiting: ~2.8 req/seg (límite eBird ~100/min)
         }
 
-        System.out.printf("  Total registros únicos acumulados: %,d%n", acumulados.size());
+        System.out.printf("Total registros únicos acumulados: %,d%n", acumulados.size());
 
         // Cargar en MySQL
         System.out.println("\n[MYSQL] Iniciando carga en base de datos...");

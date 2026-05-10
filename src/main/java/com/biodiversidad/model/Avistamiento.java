@@ -31,7 +31,7 @@ public class Avistamiento {
                 nombreCientifico != null && !nombreCientifico.isBlank();
     }
 
-    // Getters
+    // getters
     public String    getNombreCientifico() { return nombreCientifico; }
     public String    getNombreComun()      { return nombreComun; }
     public double    getLatitud()          { return latitud; }
