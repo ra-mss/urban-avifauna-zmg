@@ -37,3 +37,22 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Java
+target/
+*.class
+
+# Python
+python/venv/
+python/__pycache__/
+*.pyc
+
+# Archivos generados (outputs)
+python/elbow_method.png
+python/poisson_zona.png
+python/nodos_biologicos_zmg.html
+python/estadisticas_por_zona.csv
+
+# Credenciales
+db.properties
+*.env
