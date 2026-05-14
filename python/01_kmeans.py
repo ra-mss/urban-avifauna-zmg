@@ -21,15 +21,14 @@ df = pd.read_sql(
 )
 print(f"Registros cargados: {len(df):,}")
 
-# 2. Normalizar coordenadas (CRUCIAL para K-Means)
-#   Sin normalizar, la escala de lat y lon podría distorsionar clusters
+# 2. Normalizar coordenadas
 scaler = StandardScaler()
 X = scaler.fit_transform(df[["latitud", "longitud"]])
 
 # 3. Metodo del codo para encontrar el K óptimo
 print("\nCalculando método del codo (K de 2 a 14)...")
 inercias = []
-rango_k  = range(2, 15)
+rango_k = range(2, 15)
 
 for k in rango_k:
     modelo = KMeans(n_clusters=k, random_state=42, n_init=10, max_iter=300)
@@ -45,7 +44,7 @@ ax.set_title("Método del codo - Nodos biológicos ZMG", fontsize=15, fontweight
 ax.grid(True, alpha=0.3)
 
 # Marcaje en el codo
-K_OPTIMO = 5   # <- CAMBIAR ESTE VALOR SEGUN LO QUE VEAMOS EN LA GRAFICA
+K_OPTIMO = 5 # <- CAMBIAR ESTE VALOR SEGUN LO QUE VEAMOS EN LA GRAFICA
 ax.axvline(x=K_OPTIMO, color="red", linestyle="--", linewidth=2,
            label=f"K óptimo = {K_OPTIMO}")
 ax.legend(fontsize=12)
@@ -88,7 +87,7 @@ print("Zonas guardadas en MySQL :D")
 
 # 7. Actualizar id_zona en cada registro (asignación de cluster)
 print("Asignando id_zona a cada registro...")
-# Primero obtenemos el id_zona real (auto_increment) de MySQL
+# Obtiene el id_zona real (auto_increment) desde mySQL
 zonas_mysql = pd.read_sql("SELECT id_zona, cluster_id FROM Zonas", engine)
 df = df.merge(zonas_mysql, on="cluster_id")
 
