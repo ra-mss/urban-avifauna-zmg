@@ -42,7 +42,7 @@ COLORES = [
     "#5F5E5A",  # gris
 ]
 
-#  3. Crear mapa base centrado en GDL
+#  3. Crear mapa base centrado en ZMG
 mapa = folium.Map(
     location=[20.5597, -103.3496],
     zoom_start=10,
