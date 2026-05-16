@@ -27,12 +27,12 @@ df = pd.read_sql("""
                  """, engine)
 
 zonas = pd.read_sql("SELECT * FROM Zonas", engine)
-print(f"  Avistamientos: {len(df):,} | Zonas: {len(zonas)}")
+print(f"Avistamientos: {len(df):,} | Zonas: {len(zonas)}")
 
 #  2. Paleta de colores por clúster
 COLORES = [
     "#185FA5",  # azul
-    "#1D9E75",  # teal
+    "#1D9E75",  # teal (?)
     "#D85A30",  # coral
     "#D4537E",  # rosa
     "#BA7517",  # ámbar
@@ -118,7 +118,7 @@ for cluster_id in sorted(df["cluster_id"].unique()):
 
 # 7. Marcadores de nodos biológicos
 
-nodos_capa = folium.FeatureGroup(name="Nodos biológicos", show=True)
+nodos_capa = folium.FeatureGroup(name="Nodos ecológicos", show=True)
 
 for _, zona in zonas.iterrows():
     cid   = int(zona["cluster_id"])
@@ -149,12 +149,12 @@ folium.LayerControl(collapsed=False).add_to(mapa)
 # Título superpuesto en el mapa
 titulo_html = """
 
-  Nodos biológicos en la Zona Metropolitana de Guadalajara
+  Nodos de biodiversidad en la Zona Metropolitana de Guadalajara
 
 """
 mapa.get_root().html.add_child(folium.Element(titulo_html))
 
-output_file = "nodos_biologicos_zmg.html"
+output_file = "nodos_ecologicos_zmg.html"
 mapa.save(output_file)
 print(f"\nMapa guardado: {output_file}")
 print("Ábrelo en tu navegador para ver los resultados interactivos.")

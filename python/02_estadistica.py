@@ -55,9 +55,9 @@ for zona_id, lam in lambdas.items():
     p_3_o_mas = 1 - poisson.cdf(2, lam)  # P(X >= 3)
     p_5_o_mas = 1 - poisson.cdf(4, lam)  # P(X >= 5)
     diferencia = lam - lambda_global
-    signo = "▲" if diferencia > 0 else "▼"
+    signo = " (Más)" if diferencia > 0 else " (Menos)"
     print(f"{zona_id:>5}  {lam:>7.3f}  {p_3_o_mas:>9.4f}  {p_5_o_mas:>9.4f}  "
-          f"{signo}{abs(diferencia):.3f}")
+          f"{abs(diferencia):.3f}{signo}")
 
 # 3. Grafica Poisson de la zona con mayor lambda
 
@@ -86,9 +86,6 @@ ax.axvline(x=lam_max, color="#185FA5", linestyle="--",
 ax.axvline(x=lambda_global, color="#5F5E5A", linestyle="--",
            linewidth=2, alpha=0.8)
 
-# Anotaciones de lambda
-
-
 ax.set_xlabel("Individuos por avistamiento (k)", fontsize=16, labelpad=10)
 ax.set_ylabel("Probabilidad  P(X = k)", fontsize=16, labelpad=10)
 ax.set_title(f"Distribución de Poisson - Nodo {zona_max}",
@@ -106,7 +103,6 @@ print("Gráfica guardada: poisson_zona.png")
 
 descriptivo.to_csv("estadisticas_por_zona.csv")
 print("Tabla guardada: estadisticas_por_zona.csv")
-print("\nEstadística completa. Siguiente: python 03_mapa.py")
 
 # 5. Regresión lineal
 
@@ -234,3 +230,5 @@ plt.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.savefig("regresion_multiple.png", dpi=150)
 print("\nGráfica guardada: regresion_multiple.png")
+
+print("\nEstadística completa. Siguiente: python 03_mapa.py")
