@@ -3,13 +3,9 @@ package com.biodiversidad.service;
 import com.biodiversidad.model.Avistamiento;
 import java.sql.*;
 import java.util.List;
-import java.util.List;
-import java.util.Set;
-import java.util.ArrayList;
-import java.util.HashSet;
 
 public class ETLService {
-    // Cuántos registros se envían juntos en cada lote de SQL
+    // registros por lote a SQL
     private static final int BATCH_SIZE = 500;
     private final Connection conn;
 
@@ -17,9 +13,6 @@ public class ETLService {
         this.conn = conn;
     }
 
-    /**
-     CARGAR: Inserta la lista en MySQL en lotes (O(n), no O(n²)). ON DUPLICATE KEY UPDATE evita errores de repetidos
-     */
     public void cargar(List<Avistamiento> avistamientos) throws SQLException {
         String sql = """
             INSERT INTO RegistrosDeAvistamiento
@@ -30,7 +23,7 @@ public class ETLService {
               loc_nombre = VALUES(loc_nombre)
             """;
 
-        // Desactiva autocommit: una sola transacción para todo el lote
+        // desactivar autocommit es para una sola transacción para el lote completo (creo)
         conn.setAutoCommit(false);
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -41,8 +34,8 @@ public class ETLService {
                 ps.setString(2, a.getNombreComun());
                 ps.setDouble(3, a.getLatitud());
                 ps.setDouble(4, a.getLongitud());
-                ps.setDate  (5, java.sql.Date.valueOf(a.getFecha()));
-                ps.setInt   (6, a.getCantidad());
+                ps.setDate(5, java.sql.Date.valueOf(a.getFecha()));
+                ps.setInt(6, a.getCantidad());
                 ps.setString(7, a.getLocNombre());
                 ps.addBatch();
 
@@ -51,7 +44,7 @@ public class ETLService {
                     System.out.printf("[CARGAR] %,d registros insertados...%n", contador);
                 }
             }
-            ps.executeBatch();  // Lote residual
+            ps.executeBatch();
             conn.commit();
             System.out.printf("Carga completa: %,d registros totales.%n", contador);
 
@@ -64,11 +57,8 @@ public class ETLService {
         }
     }
 
-    /**
-     Ingresa datos en la tabla Especies con los nombres únicos
-     que ya existen en RegistrosDeAvistamiento.
-     Se ejecuta DESPUES de cargar los avistamientos
-     */
+    // ingresa los datos en tabla Especies, utiliza nombres únicos que existen en RegistrosDeAvist
+    // pero en teoría correo después de cargar los avistamientos
     public void poblarEspecies() throws SQLException {
         String sql = """
             INSERT IGNORE INTO Especies (nombre_cientifico, nombre_comun)
@@ -78,7 +68,7 @@ public class ETLService {
             """;
         try (Statement st = conn.createStatement()) {
             int filas = st.executeUpdate(sql);
-            System.out.println("  Especies agregadas: " + filas);
+            System.out.println("Especies agregadas: " + filas);
         }
     }
 }

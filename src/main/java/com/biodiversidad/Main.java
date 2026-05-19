@@ -7,7 +7,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // Validaciones de entorno
+        // validaciones
         String apiKey = System.getenv("EBIRD_API_KEY");
         String dbPass = System.getenv("DB_PASSWORD");
 
@@ -21,7 +21,7 @@ public class Main {
                 + "?useSSL=false&serverTimezone=UTC";
         String dbUser = "root";
 
-        System.out.println("Nodos biológicos - ZMG ETL");
+        System.out.println("Nodos de biodiversidad - ZMG ETL");
 
         try (Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPass)) {
             System.out.println("Conexión MySQL establecida.\n");
@@ -33,8 +33,8 @@ public class Main {
 
             acumulator.ejecutar();
 
-            System.out.println("\n Pipeline ETL completado.");
-            System.out.println("Siguiente paso: ejecuta python/01_kmeans.py");
+            System.out.println("\nPipeline ETL completo.");
+            System.out.println("Siguiente: ejecutar python/01_kmeans.py");
 
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());

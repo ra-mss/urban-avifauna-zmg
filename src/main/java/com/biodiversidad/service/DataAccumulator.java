@@ -11,25 +11,25 @@ public class DataAccumulator {
     private final EBirdAPIClient api;
     private final ETLService etl;
 
-    // Fechas históricas de alta actividad migratoria en Jalisco
-    private static final LocalDate[] FECHAS_HISTORICAS = {
-            // Primavera 2025
+    // fechas predefinidas en Jalisco
+    private static final LocalDate[] FECHAS_PREDEF = {
+            // primavera 2025
             LocalDate.of(2025, 3, 21),
             LocalDate.of(2025, 4, 15),
             LocalDate.of(2025, 5, 10),
-            // Verano 2025
+            // verano 2025
             LocalDate.of(2025, 6, 21),
             LocalDate.of(2025, 7, 15),
             LocalDate.of(2025, 8, 10),
-            // Otoño 2025
+            // otoño 2025
             LocalDate.of(2025, 9, 22),
             LocalDate.of(2025, 10, 15),
             LocalDate.of(2025, 11, 10),
-            // Invierno 2025-2026
+            // invierno 2025-2026
             LocalDate.of(2025, 12, 21),
             LocalDate.of(2026, 1, 15),
             LocalDate.of(2026, 2, 10),
-            // Primavera 2026 (a la fecha)
+            // primavera 2026 a la fecha (se corrió el 16 de mayo, pero la fecha es para el 15 de abril, se puede actualizar después)
             LocalDate.of(2026, 3, 21),
             LocalDate.of(2026, 4, 15),
     };
@@ -43,23 +43,23 @@ public class DataAccumulator {
         Set<String> clavesVistas = new HashSet<>();
         List<Avistamiento> acumulados = new ArrayList<>();
 
-        // Llamada 1: últimos 30 días en Jalisco
+        // llamada 1, para últimos 30 días en Jalisco
         System.out.println("\n[1/16] Observaciones recientes MX-JAL...");
         agregarNuevos(api.fetchRecientes(30), acumulados, clavesVistas);
 
-        // Llamada 2: radio 50km alrededor del centro de GDL
-        System.out.println("\n[2/16] Observaciones radio 50km (GDL centro)...");
+        // llamada 2, para radio 50km alrededor del centro de GDL
+        System.out.println("\n[2/16] Observaciones radio 50km (a partir de GDL centro)...");
         agregarNuevos(
                 api.fetchPorRadio(20.6597, -103.3496, 50),
                 acumulados, clavesVistas
         );
 
-        // Llamadas 3-16: fechas históricas
-        for (int i = 0; i < FECHAS_HISTORICAS.length; i++) {
+        // llamadas 3 a 16: fechas predefinidas 
+        for (int i = 0; i < FECHAS_PREDEF.length; i++) {
             System.out.printf("%n[%d/16] Histórico: %s...%n",
-                    i + 3, FECHAS_HISTORICAS[i]);
+                    i + 3, FECHAS_PREDEF[i]);
             agregarNuevos(
-                    api.fetchHistorico(FECHAS_HISTORICAS[i]),
+                    api.fetchHistorico(FECHAS_PREDEF[i]),
                     acumulados, clavesVistas
             );
             Thread.sleep(350); // Rate limiting: ~2.8 req/seg (límite eBird ~100/min)
@@ -67,13 +67,13 @@ public class DataAccumulator {
 
         System.out.printf("Total registros únicos acumulados: %,d%n", acumulados.size());
 
-        // Cargar en MySQL
+        // cargar en MySQL
         System.out.println("\n[MYSQL] Iniciando carga en base de datos...");
         etl.cargar(acumulados);
         etl.poblarEspecies();
     }
 
-    // Agrega solo los registros que no hayamos visto antes (O(1) con HashSet)
+    // agrega solo los registros que no hayamos visto antes (O(1) con HashSet)
     private void agregarNuevos(List<Avistamiento> nuevos,
                                List<Avistamiento> acumulados,
                                Set<String> clavesVistas) {

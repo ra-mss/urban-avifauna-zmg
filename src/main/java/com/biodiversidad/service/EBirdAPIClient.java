@@ -3,7 +3,6 @@ package com.biodiversidad.service;
 import com.biodiversidad.model.Avistamiento;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.net.URI;
 import java.net.http.*;
 import java.net.http.HttpResponse;
@@ -17,7 +16,7 @@ public class EBirdAPIClient {
     private final HttpClient http = HttpClient.newHttpClient();
     private final ObjectMapper json = new ObjectMapper();
 
-    // 1. Observaciones recientes en Jalisco (últimos N días)
+    // observaciones recientes en Jalisco (últimos X días)
     public List<Avistamiento> fetchRecientes(int diasAtras) throws Exception {
         String url = BASE + "/data/obs/MX-JAL/recent"
                 + "?back=" + diasAtras
@@ -27,24 +26,24 @@ public class EBirdAPIClient {
         return parsearRespuesta(llamarAPI(url));
     }
 
-    // 2. Histórico para una fecha específica
+    // histórico para una fecha específica
     public List<Avistamiento> fetchHistorico(LocalDate fecha) throws Exception {
         String url = String.format(
                 "%s/data/obs/MX-JAL/historic/%d/%d/%d?maxResults=10000",
                 BASE, fecha.getYear(), fecha.getMonthValue(), fecha.getDayOfMonth()
         );
-        System.out.println("  → Fetching histórico: " + fecha + "...");
+        System.out.println("Fetching histórico: " + fecha + "...");
         return parsearRespuesta(llamarAPI(url));
     }
 
-    // 3. Radio geográfico alrededor de GDL
+    // radio alrededor de GDL
     public List<Avistamiento> fetchPorRadio(double lat, double lon,
                               int radioKm) throws Exception {
         String url = String.format(
                 "%s/data/obs/geo/recent?lat=%.4f&lng=%.4f&dist=%d&back=30&maxResults=10000",
                 BASE, lat, lon, radioKm
         );
-        System.out.println("  → Fetching por radio (" + radioKm + "km)...");
+        System.out.println("Fetching por radio (" + radioKm + "km)...");
         return parsearRespuesta(llamarAPI(url));
     }
 
@@ -72,7 +71,7 @@ public class EBirdAPIClient {
         return resp.body();
     }
 
-    // Parsear array JSON -> List
+    // parsear array JSON a List
     private List<Avistamiento> parsearRespuesta(String cuerpo) throws Exception {
         List<Avistamiento> lista = new ArrayList<>();
         JsonNode array = json.readTree(cuerpo);
@@ -97,7 +96,7 @@ public class EBirdAPIClient {
                 if (a.isValido()) lista.add(a);
 
             } catch (Exception ignored) {
-                // Registro malformado se descarta
+                // registro mal se descarta
             }
         }
         System.out.println("Registros válidos de la ZMG: " + lista.size());

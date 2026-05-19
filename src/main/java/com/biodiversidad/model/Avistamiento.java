@@ -3,7 +3,6 @@ package com.biodiversidad.model;
 import java.time.LocalDate;
 
 public class Avistamiento {
-    private int idAvistamiento;
     private String nombreCientifico;
     private String nombreComun;
     private double latitud;
@@ -32,13 +31,13 @@ public class Avistamiento {
     }
 
     // getters
-    public String    getNombreCientifico() { return nombreCientifico; }
-    public String    getNombreComun()      { return nombreComun; }
-    public double    getLatitud()          { return latitud; }
-    public double    getLongitud()         { return longitud; }
-    public LocalDate getFecha()            { return fecha; }
-    public int       getCantidad()         { return cantidad; }
-    public String    getLocNombre()        { return locNombre; }
+    public String getNombreCientifico() { return nombreCientifico; }
+    public String getNombreComun() { return nombreComun; }
+    public double getLatitud() { return latitud; }
+    public double getLongitud() { return longitud; }
+    public LocalDate getFecha(){ return fecha; }
+    public int getCantidad() { return cantidad; }
+    public String getLocNombre(){ return locNombre; }
 
     @Override
     public String toString() {
